@@ -28,10 +28,10 @@ t_flag				*init_flags()
 {
 	t_flag			*flags;
 	//t_flags			flg;
-	const char		*flag_str = "#+-0";
+	const char		*flag_str = "#+-0 ";
 	unsigned int	c;
 
-	flags = (t_flag *)malloc(sizeof(t_flag) * 4);
+	flags = (t_flag *)malloc(sizeof(t_flag) * 6);
 	c = 0;
 	while (flag_str[c])
 	{
@@ -99,7 +99,7 @@ int					ft_printf(const char *format, ...)
 	int				prec = 0;
 	int				width = 0;
 	t_flag			*flags;
-	const char		*flag_str = "#+-0";
+	const char		*flag_str = "#+-0 ";
 	const char		*specs = "cspxudio";
 	const char		*len_mods = "hljz";
 	char			*tmpi = NULL;
@@ -107,7 +107,7 @@ int					ft_printf(const char *format, ...)
 
 	va_start(args, format);
 //	consts = init_constants();
-	flags = init_flags();
+	flags = NULL;
 	index = 0;
 	cnt = 0;
 	tmp = -1;
@@ -116,6 +116,7 @@ int					ft_printf(const char *format, ...)
 		if (format[index] == '%')
 		{
 			tmp = index++;
+			flags = init_flags();
 			while (ft_strchr((const char *)specs, format[index]) == NULL && format[index])
 			{
 				if (ft_strchr((const char *)flag_str, format[index]) != NULL)
@@ -146,11 +147,11 @@ int					ft_printf(const char *format, ...)
 					ft_strdel(&tmpi);
 					//continue;
 				}
-				else if (ft_isdigit(format[index]) || format[index] == '-')
+				else if (ft_isdigit(format[index]))
 				{
 					int b = 0;
 					tmpi = ft_strnew(9);
-					printf("%c\n", format[index]);
+				//	printf("%c - woosh!!\n", format[index]);
 					while (ft_isdigit(format[index]))
 						tmpi[b++] = format[index++];
 					tmpi[b] = '\0';
@@ -161,10 +162,12 @@ int					ft_printf(const char *format, ...)
 					break;
 			}
 					//printf("---%c---\n", format[index]);
+				//ft_putendl("another");
 			if (print_word(format[index++], &args, flags, prec, width))
 			{
 				cnt++;
-				//ft_putendl("another");
+				free((void *) flags);
+				flags = NULL;
 				continue;
 			}
 			index = tmp;
@@ -173,7 +176,8 @@ int					ft_printf(const char *format, ...)
 		index++;
 	}
 	va_end(args);
-	free((void *) flags);
+	if (flags != NULL)
+		free((void *) flags);
 //	free(consts);
 	return (cnt);
 }

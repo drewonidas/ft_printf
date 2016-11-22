@@ -29,7 +29,6 @@ void	process_str(t_converter *converter, va_list *arg, int precision, int width)
 	char *tmp;
 
 	converter->data->str = va_arg(*arg, char *);
-	//printf("======%s======\n", converter->data->str);
 	tmp = ft_strdup(converter->data->str);
 	padding = width - ABS((int)ft_strlen(tmp) -precision);
 	c = 0;
@@ -53,20 +52,53 @@ void	process_str(t_converter *converter, va_list *arg, int precision, int width)
 	ft_strdel(&tmp);
 }
 
-void	process_int(t_converter *converter, va_list *arg, int precision, int width)
+void		process_int(t_converter *converter, va_list *arg, int precision, int width)
 {
-//	while (converter->flags->width--)
-//	{
-//		if (converter->flags->f_0)
-//			ft_putchar('0');
-//		else
-//			ft_putchar(' ');
-//	}
-	converter->data->nbr = 0;
-	int n = va_arg(*arg, int);
-	ft_putnbr(n);
-	width++;
-	precision++;
+	int		padding;
+	char	*n;
+
+	//const char		*flag_str = "#+-0 ";
+	converter->data->nbr = va_arg(*arg, int);
+	n = ft_itoa(converter->data->nbr);
+	padding = width - ABS((int)ft_strlen(n) - precision);
+	ft_strdel(&n);
+	while (padding > 0 && (converter->flags[2].value != 1 || converter->flags[3].value == 1))
+	{
+		if (converter->flags[1].value == 1 && converter->data->nbr > 0)
+		{
+			ft_putchar('+');
+			converter->flags[1].value = 0;
+			padding--;
+			continue;
+		}
+		else if (converter->flags[4].value == 1 && converter->data->nbr > 0)
+		{
+			ft_putchar(' ');
+			converter->flags[4].value = 0;
+			padding--;
+			continue;
+		}
+		padding--;
+		if (converter->flags[2].value == 1)
+			ft_putchar(' ');
+		else
+			ft_putchar('0');
+	//	if (converter->flags[1].value == 1 && padding == 1)
+	//	padding--;
+	}
+	if (converter->flags[1].value == 1 && converter->data->nbr > 0)
+		ft_putchar('+');
+	else if (converter->flags[4].value == 1 && converter->data->nbr > 0)
+		ft_putchar(' ');
+	ft_putnbr(converter->data->nbr);
+	while (padding > 0 && (converter->flags[2].value == 1 || converter->flags[3].value == 1))
+	{
+		padding--;
+		if (converter->flags[2].value == 1)
+			ft_putchar(' ');
+		else
+			ft_putchar('0');
+	}
 }
 
 /*void	process_poi(t_converter *converter, va_list arg, int precision, int width)

@@ -16,6 +16,7 @@
 # include <unistd.h>
 # include <stdlib.h>
 # include <string.h>
+# include "ft_printf.h"
 # define TRUE 1
 # define FALSE 0
 # define ABS(x) (((x) < 0) ? -(x) : (x))
