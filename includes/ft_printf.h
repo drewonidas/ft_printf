@@ -21,7 +21,7 @@ union				u_data
 	//wchar_t			*wc_str;
 };
 
-typedef	enum		e_specifiers
+/*typedef	enum		e_specifiers
 {
 	s,
 	S,
@@ -56,7 +56,7 @@ typedef enum		e_mods
 	j,
 	z
 }					t_mods;
-
+*/
 typedef struct		s_flag
 {
 	char			flag;
@@ -69,15 +69,19 @@ typedef struct		s_converter
 	union u_data	*data;
 }					t_converter;
 
-typedef 			void (*t_print)(t_converter *, va_list*, int, int);
+typedef struct		s_field
+{
+	int				precision;
+	int				width;
+}					t_field;
 
-int					ft_printf(const char *format, ...);
+typedef 			void (*t_print)(t_converter *, va_list*, t_field *);
 
 void				process_char(t_converter *converter, va_list arg, int precision, int width);
 
-void				process_str(t_converter *converter, va_list *arg, int precision, int width);
+void				process_str(t_converter *converter, va_list *arg, t_field *field);
 
-void				process_int(t_converter *converter, va_list *arg, int precision, int width);
+void				process_int(t_converter *converter, va_list *arg, t_field *field);
 
 void				process_poi(t_converter *converter, va_list arg, int precision, int width);
 
@@ -86,5 +90,9 @@ void				process_hex(t_converter *converter, va_list arg, int precision, int widt
 void				process_oct(t_converter *converter, va_list arg, int precision, int width);
 
 void				process_dec(t_converter *converter, va_list arg, int precision, int width);
+
+void				pad(char sp, char side, t_flag *flags, t_field *attr, unsigned int output_len);
+
+int					get_digit(char *format, int *index);
 
 #endif

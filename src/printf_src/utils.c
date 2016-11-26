@@ -1,52 +1,58 @@
-#include "libft.h"
+#include "ft_printf.h"
 
-/*
- *	adds padding
- *	params:
- *		[char sp - specifier],
- *		[t_flag flags - structure with flag info]
- *		[unsigned int ouput_len - length of output]
- */
+int			get_digit(char *format, int *index)
+{	
+	int		c;
+	int		result;
+	char	*tmp;
+
+	tmp = ft_strnew(9);
 	
-//#+-0' '
-static void		pad_int_left(int padding, t_flag *flags)
-{
-	while (padding > 0)
+		ft_putchar(format[0]);
+	format++;
+	c = 0;
+	result = -1;
+	if (format != NULL)
 	{
-		if (flags[1].value > 0)
-		{
-			ft_putchar('+');
-			converter->flags[1].value = 0;
-			padding--;
-			continue;
-		}
-		else if (flags[4].value > 1)
-		{
-			ft_putchar(' ');
-			converter->flags[4].value = 0;
-			padding--;
-			continue;
-		}
-		padding--;
-		if (flags[2].value == 1)
-			ft_putchar(' ');
-		else
-			ft_putchar('0');
-		//if (flags[1].value == 1 && padding == 1)
-		//	padding--;
+		ft_putendl("bash");
+		while (ft_isdigit(*format) && *format)
+			tmp[c++] = *format++;
+		tmp[c] = '\0';
+		result = atoi(tmp);
+		ft_strdel(&tmp);
+		*index += c;
 	}
+	return (result);
 }
-
-void			pad(char sp, char side, t_flag *flags, unsigned int output_len)
+/*
+int			get_options(t_flag *flags, t_field *field, char *format, )
 {
-	int			padding;
+	int		index;
 
-	padding = width - ABS((int) output_len - precision);
-	if (sp == 'i')
+	index = 0;
+	while (ft_strchr((const char *)specs, format[index]) == NULL && format[index])
 	{
-		if (side == 'l');
-			pad_int_left(padding, flags);
+		if (ft_strchr((const char *)flag_str, format[index]) != NULL)
+		{
+			flags[ft_indexof(flag_str, format[index])].value = 1;
+			index++;
+		}
+		else if (ft_strchr((const char *)len_mods, format[index]) != NULL)
+		{
+			if (ft_strncmp(&format[index], "hh", 2) == 0 || ft_strncmp(&format[index], "ll", 2) == 0)
+			{
+				
+				index++;
+			}
+			index++;
+		}
+		else if (format[index] == '.')
+			field->precision = get_digit(*format[index], &index);
+		else if (ft_isdigit(format[index]))
+			field->width = get_digit(*format[index], &index);
+		//	printf("%c - woosh!!\n", format[index]);
 		else
-			pad_int_right(padding, flags);
+			break;
 	}
-}
+	return (index);
+}*/

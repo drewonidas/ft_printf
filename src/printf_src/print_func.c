@@ -22,83 +22,47 @@
 	precision++;
 }*/
 
-void	process_str(t_converter *converter, va_list *arg, int precision, int width)
+void	process_str(t_converter *converter, va_list *arg, t_field *field)
 {
 	int	c;
-	int padding;
 	char *tmp;
 
 	converter->data->str = va_arg(*arg, char *);
 	tmp = ft_strdup(converter->data->str);
-	padding = width - ABS((int)ft_strlen(tmp) -precision);
 	c = 0;
-	while (padding > 0 && converter->flags[2].value != 1)
+	if (converter->flags[2].value != 1)
+		pad('s', 'L', converter->flags, field, ft_strlen(tmp));
+	if (field->precision > 0)
 	{
-		padding--;
-		ft_putchar(' ');
-	}
-	if (precision > 0)
-	{
-		while (c < precision && tmp[c])
+		while (c < field->precision && tmp[c])
 			ft_putchar(tmp[c++]);
 	}
 	else
 		ft_putstr(tmp);
-	while (padding > 0 && converter->flags[2].value == 1)
-	{
-		padding--;
-		ft_putchar(' ');
-	}
+	if (converter->flags[2].value == 1)
+		pad('s', 'R', converter->flags, field, ft_strlen(tmp));
 	ft_strdel(&tmp);
 }
 
-void		process_int(t_converter *converter, va_list *arg, int precision, int width)
+void		process_int(t_converter *converter, va_list *arg, t_field *field)
 {
-	int		padding;
 	char	*n;
+	unsigned int		len;
 
-	//const char		*flag_str = "#+-0 ";
+//#+-0' '
 	converter->data->nbr = va_arg(*arg, int);
 	n = ft_itoa(converter->data->nbr);
-	padding = width - ABS((int)ft_strlen(n) - precision);
+	len = ft_strlen(n);
 	ft_strdel(&n);
-	while (padding > 0 && (converter->flags[2].value != 1 || converter->flags[3].value == 1))
-	{
-		if (converter->flags[1].value == 1 && converter->data->nbr > 0)
-		{
-			ft_putchar('+');
-			converter->flags[1].value = 0;
-			padding--;
-			continue;
-		}
-		else if (converter->flags[4].value == 1 && converter->data->nbr > 0)
-		{
-			ft_putchar(' ');
-			converter->flags[4].value = 0;
-			padding--;
-			continue;
-		}
-		padding--;
-		if (converter->flags[2].value == 1)
-			ft_putchar(' ');
-		else
-			ft_putchar('0');
-	//	if (converter->flags[1].value == 1 && padding == 1)
-	//	padding--;
-	}
+	if (converter->flags[2].value != 1 )//|| converter->flags[3].value == 1)
+		pad('i', 'L', converter->flags, field, len);
 	if (converter->flags[1].value == 1 && converter->data->nbr > 0)
 		ft_putchar('+');
 	else if (converter->flags[4].value == 1 && converter->data->nbr > 0)
 		ft_putchar(' ');
 	ft_putnbr(converter->data->nbr);
-	while (padding > 0 && (converter->flags[2].value == 1 || converter->flags[3].value == 1))
-	{
-		padding--;
-		if (converter->flags[2].value == 1)
-			ft_putchar(' ');
-		else
-			ft_putchar('0');
-	}
+	if (converter->flags[2].value == 1 )//|| converter->flags[3].value == 1)
+		pad('i', 'R', converter->flags, field, len);
 }
 
 /*void	process_poi(t_converter *converter, va_list arg, int precision, int width)

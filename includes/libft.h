@@ -16,7 +16,6 @@
 # include <unistd.h>
 # include <stdlib.h>
 # include <string.h>
-# include "ft_printf.h"
 # define TRUE 1
 # define FALSE 0
 # define ABS(x) (((x) < 0) ? -(x) : (x))
@@ -149,6 +148,8 @@ void				ft_putendl_fd(char const *s, int fd);
 void				ft_putnbr_fd(int n, int fd);
 
 void				ft_putnbr_base(int nbr, int base);
+
+int					ft_printf(const char *format, ...);
 
 /**
  ** linked list functions

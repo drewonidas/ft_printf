@@ -27,7 +27,6 @@
 t_flag				*init_flags()
 {
 	t_flag			*flags;
-	//t_flags			flg;
 	const char		*flag_str = "#+-0 ";
 	unsigned int	c;
 
@@ -58,7 +57,7 @@ t_print				*init_funcs(size_t size)
 	return (print);
 }
 
-int					print_word(char sp, va_list *args, t_flag *flags, int prec, int width)
+int					print_word(char sp, va_list *args, t_flag *flags, t_field *field)
 {
 	t_print			*print;
 	t_converter		*converter;
@@ -81,7 +80,7 @@ int					print_word(char sp, va_list *args, t_flag *flags, int prec, int width)
 	c = ft_indexof(specs, sp);
 	if (c != -1)
 	{
-		print[c](converter, args, prec, width);
+		print[c](converter, args, field);
 		result = 1;
 	}
 	free((void *) converter->data);
@@ -96,17 +95,15 @@ int					ft_printf(const char *format, ...)
 	int				index;
 	int				cnt;
 	int				tmp;
-	int				prec = 0;
-	int				width = 0;
+	t_field			field;
 	t_flag			*flags;
 	const char		*flag_str = "#+-0 ";
 	const char		*specs = "cspxudio";
 	const char		*len_mods = "hljz";
-	char			*tmpi = NULL;
-//	t_constant		*consts;
 
 	va_start(args, format);
-//	consts = init_constants();
+	field.precision = 0;
+	field.width = 0;
 	flags = NULL;
 	index = 0;
 	cnt = 0;
@@ -120,11 +117,7 @@ int					ft_printf(const char *format, ...)
 			while (ft_strchr((const char *)specs, format[index]) == NULL && format[index])
 			{
 				if (ft_strchr((const char *)flag_str, format[index]) != NULL)
-				{
-					flags[ft_indexof(flag_str, format[index])].value = 1;
-					index++;
-					//continue;
-				}
+					flags[ft_indexof(flag_str, format[index++])].value = 1;
 				else if (ft_strchr((const char *)len_mods, format[index]) != NULL)
 				{
 					if (ft_strncmp(&format[index], "hh", 2) == 0 || ft_strncmp(&format[index], "ll", 2) == 0)
@@ -133,37 +126,18 @@ int					ft_printf(const char *format, ...)
 						index++;
 					}
 					index++;
-					//continue;
 				}
 				else if (format[index] == '.')
-				{
-					int b = 0;
-					tmpi = ft_strnew(9);
-					index++;
-					while (ft_isdigit(format[index]))
-						tmpi[b++] = format[index++];
-					tmpi[b] = '\0';
-					prec = atoi(tmpi);
-					ft_strdel(&tmpi);
-					//continue;
-				}
+					field.precision = get_digit(ft_strchr(format, '.'), &index);
 				else if (ft_isdigit(format[index]))
-				{
-					int b = 0;
-					tmpi = ft_strnew(9);
+					field.width = get_digit(ft_strchr(format, '.'), &index);
 				//	printf("%c - woosh!!\n", format[index]);
-					while (ft_isdigit(format[index]))
-						tmpi[b++] = format[index++];
-					tmpi[b] = '\0';
-					width = atoi(tmpi);
-					ft_strdel(&tmpi);
-				}
 				else
 					break;
 			}
 					//printf("---%c---\n", format[index]);
 				//ft_putendl("another");
-			if (print_word(format[index++], &args, flags, prec, width))
+			if (print_word(format[index++], &args, flags, &field))
 			{
 				cnt++;
 				free((void *) flags);
@@ -178,6 +152,5 @@ int					ft_printf(const char *format, ...)
 	va_end(args);
 	if (flags != NULL)
 		free((void *) flags);
-//	free(consts);
 	return (cnt);
 }
