@@ -2,26 +2,20 @@
 
 int			get_digit(char *format, int *index)
 {	
-	int		c;
 	int		result;
 	char	*tmp;
 
 	tmp = ft_strnew(9);
-	
-		ft_putchar(format[0]);
-	format++;
-	c = 0;
-	result = -1;
-	if (format != NULL)
+	if (format[*index] == '.')
+		(*index)++;
+	while (ft_isdigit(format[*index]) && format[*index])
 	{
-		ft_putendl("bash");
-		while (ft_isdigit(*format) && *format)
-			tmp[c++] = *format++;
-		tmp[c] = '\0';
-		result = atoi(tmp);
-		ft_strdel(&tmp);
-		*index += c;
+		tmp[*index] = format[*index];
+		(*index)++;
 	}
+	tmp[*index] = '\0';
+	result = atoi(tmp);
+	ft_strdel(&tmp);
 	return (result);
 }
 /*

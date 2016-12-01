@@ -6,7 +6,7 @@
 /*   By: mdlamini <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/27 20:56:38 by mdlamini          #+#    #+#             */
-/*   Updated: 2016/06/19 17:57:28 by mdlamini         ###   ########.fr       */
+/*   Updated: 2016/11/26 16:21:12 by mdlamini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,9 +128,9 @@ int					ft_printf(const char *format, ...)
 					index++;
 				}
 				else if (format[index] == '.')
-					field.precision = get_digit(ft_strchr(format, '.'), &index);
+					field.precision = get_digit((char *)format, &index);
 				else if (ft_isdigit(format[index]))
-					field.width = get_digit(ft_strchr(format, '.'), &index);
+					field.width = get_digit((char *)format, &index);
 				//	printf("%c - woosh!!\n", format[index]);
 				else
 					break;
