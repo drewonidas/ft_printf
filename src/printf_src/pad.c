@@ -19,6 +19,8 @@ static void		pad_str(int padding)
 
 static void		pad_int_right(int padding, t_flag *flags)
 {
+	if (flags[1].value == 1)
+		padding--;
 	while (padding > 0)
 	{
 		padding--;
@@ -45,13 +47,16 @@ static void		pad_int_left(int padding, t_flag *flags)
 			padding--;
 			continue;
 		}
-		else if (flags[4].value > 1)
+		else if (flags[4].value > 0)
 		{
 			ft_putchar(' ');
 			flags[4].value = 0;
 			padding--;
 			continue;
 		}
+		printf("\n\n%i\n\n", flags[2].value == 1);
+		if (flags[2].value == 1)
+			break;
 		padding--;
 		if (flags[3].value != 1)
 			ft_putchar(' ');
@@ -65,8 +70,12 @@ static void		pad_int_left(int padding, t_flag *flags)
 void			pad(char sp, char side, t_flag *flags, t_field *attr, unsigned int output_len)
 {
 	int			padding;
+	int			tmp;
 
-	padding = attr->width - ABS((int) output_len - attr->precision);
+	tmp = 0;
+	padding = ABS(attr->width - ((int) output_len - attr->precision));
+	if (flags[1].value == 1)
+		tmp = 1;
 	if (sp == 'i')
 	{
 		if (side == 'L')
@@ -75,9 +84,6 @@ void			pad(char sp, char side, t_flag *flags, t_field *attr, unsigned int output
 			pad_int_right(padding, flags);
 	}
 	else
-	{
 		pad_str(padding);
-	}
-	sp = 'a';
-
+	flags[1].value = tmp;
 }

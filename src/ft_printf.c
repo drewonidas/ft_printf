@@ -148,9 +148,9 @@ int					ft_printf(const char *format, ...)
 		}
 		ft_putchar(format[index]);
 		index++;
+		if (flags != NULL)
+			free((void *) flags);
 	}
 	va_end(args);
-	if (flags != NULL)
-		free((void *) flags);
 	return (cnt);
 }

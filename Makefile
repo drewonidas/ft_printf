@@ -53,3 +53,5 @@ fclean: clean
 	@rm -f $(NAME)
 
 re: fclean all
+
+lean: all clean

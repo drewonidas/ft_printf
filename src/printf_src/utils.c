@@ -4,13 +4,15 @@ int			get_digit(char *format, int *index)
 {	
 	int		result;
 	char	*tmp;
+	int		c;
 
 	tmp = ft_strnew(9);
+	c = 0;
 	if (format[*index] == '.')
 		(*index)++;
 	while (ft_isdigit(format[*index]) && format[*index])
 	{
-		tmp[*index] = format[*index];
+		tmp[c++] = format[*index];
 		(*index)++;
 	}
 	tmp[*index] = '\0';
