@@ -117,7 +117,10 @@ int					ft_printf(const char *format, ...)
 			while (ft_strchr((const char *)specs, format[index]) == NULL && format[index])
 			{
 				if (ft_strchr((const char *)flag_str, format[index]) != NULL)
+				{
+						
 					flags[ft_indexof(flag_str, format[index++])].value = 1;
+				}
 				else if (ft_strchr((const char *)len_mods, format[index]) != NULL)
 				{
 					if (ft_strncmp(&format[index], "hh", 2) == 0 || ft_strncmp(&format[index], "ll", 2) == 0)
@@ -131,12 +134,10 @@ int					ft_printf(const char *format, ...)
 					field.precision = get_digit((char *)format, &index);
 				else if (ft_isdigit(format[index]))
 					field.width = get_digit((char *)format, &index);
-				//	printf("%c - woosh!!\n", format[index]);
 				else
 					break;
 			}
-					//printf("---%c---\n", format[index]);
-				//ft_putendl("another");
+			tmp = index;
 			if (print_word(format[index++], &args, flags, &field))
 			{
 				cnt++;
@@ -144,7 +145,7 @@ int					ft_printf(const char *format, ...)
 				flags = NULL;
 				continue;
 			}
-			index = tmp;
+			index = tmp + 1;
 		}
 		ft_putchar(format[index]);
 		index++;

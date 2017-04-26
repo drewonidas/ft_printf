@@ -54,8 +54,7 @@ void		process_int(t_converter *converter, va_list *arg, t_field *field)
 	n = ft_itoa(converter->data->nbr);
 	len = ft_strlen(n);
 	ft_strdel(&n);
-	if (converter->flags[2].value == 1 )//|| converter->flags[3].value == 1)
-		pad('i', 'L', converter->flags, field, len);
+	pad('i', 'L', converter->flags, field, len);
 	if (converter->flags[1].value == 1 && converter->data->nbr > 0)
 		ft_putchar('+');
 	else if (converter->flags[4].value == 1 && converter->data->nbr > 0)
