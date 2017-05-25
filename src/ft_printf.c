@@ -45,15 +45,15 @@ t_print				*init_funcs(size_t size)
 	t_print			*print;
 
 	print = (t_print *)malloc(sizeof(t_print) * size);
-//	print[0] = &process_char;
-	print[0] = &process_str;
-//	print[2] = &process_hex;
-//	print[3] = &process_hex;
-//	print[4] = &process_hex;
-//	print[5] = &process_int;
-	print[1] = &process_int;
-//	print[7] = &process_oct;
-	print[2] = NULL;
+	print[0] = &process_char;
+	print[1] = &process_str;
+	print[2] = &process_hex;
+	print[3] = &process_hex;
+	print[4] = &process_hex;
+	print[5] = &process_int;
+	print[6] = &process_int;
+	print[7] = &process_oct;
+	print[8] = NULL;
 	return (print);
 }
 
@@ -66,7 +66,7 @@ int					print_word(char sp, va_list *args, t_flag *flags, t_field *field)
 	int				result;
 
 	c = 0;
-	specs = "si";//"cspxudio";
+	specs = "cspxudio";
 	print = init_funcs(10);
 	converter = (t_converter *)malloc(sizeof(t_converter));
 	converter->data = (union u_data *)malloc(sizeof(union u_data));

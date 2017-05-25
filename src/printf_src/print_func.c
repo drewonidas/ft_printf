@@ -12,7 +12,7 @@
 
 #include "ft_printf.h"
 
-/*void	process_char(t_converter *converter, va_list arg, int precision, int width)
+void	process_char(t_converter *converter, va_list arg, int precision, int width)
 {
 	//while (converter->flags->width--)
 	//	ft_putchar(' ');
@@ -20,7 +20,7 @@
 	ft_putchar(converter->data->c);
 	width++;
 	precision++;
-}*/
+}
 
 void	process_str(t_converter *converter, va_list *arg, t_field *field)
 {

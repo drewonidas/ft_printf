@@ -45,6 +45,10 @@ $(NAME):
 
 all: $(NAME)
 
+test: $(NAME)
+	@gcc -o test main.c $(NAME) -Iincludes/
+	@echo "---==== test built ====---"
+
 clean:
 	@rm -f $(OBJ)
 	@echo "---==== project clean ====---"
