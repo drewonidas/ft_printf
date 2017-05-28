@@ -13,144 +13,138 @@
 #include "ft_printf.h"
 #include <stdio.h>
 
-/*t_constant			*init_contants()
-{
-	t_constant		*constants;
-
-	constants = (t_constant *)malloc(sizeof(t_constant));
-	constants->specifiers = "cspxudio";
-	constants->flags = "#+-0";
-	constants->len_mods = "hljz";
-	return (constants);
-}*/
-//TODO: implement using linked lists
-t_flag				*init_flags()
-{
-	t_flag			*flags;
-	const char		*flag_str = "#+-0 ";
-	unsigned int	c;
-
-	flags = (t_flag *)malloc(sizeof(t_flag) * 6);
-	c = 0;
-	while (flag_str[c])
-	{
-		flags[c].flag = flag_str[c];
-		flags[c++].value = 0;
-	}
-	return (flags);
-}
-
-t_print				*init_funcs(size_t size)
-{
-	t_print			*print;
-
-	print = (t_print *)malloc(sizeof(t_print) * size);
-	print[0] = &process_char;
-	print[1] = &process_str;
-	print[2] = &process_hex;
-	print[3] = &process_hex;
-	print[4] = &process_hex;
-	print[5] = &process_int;
-	print[6] = &process_int;
-	print[7] = &process_oct;
-	print[8] = NULL;
-	return (print);
-}
-
-int					print_word(char sp, va_list *args, t_flag *flags, t_field *field)
-{
-	t_print			*print;
-	t_converter		*converter;
+int					get_digit(char *format, int *index)
+{	
+	int				result;
+	char			*tmp;
 	int				c;
-	char			*specs;
+
+	tmp = ft_strnew(9);
+	c = 0;
+	if (format[*index] == '.')
+		(*index)++;
+	while (ft_isdigit(format[*index]) && format[*index])
+	{
+		tmp[c++] = format[*index];
+		(*index)++;
+	}
+	tmp[c] = '\0';
+	result = atoi(tmp);
+	ft_strdel(&tmp);
+	(*index)--;
+	return (result);
+}
+
+char				*get_arg_as_str(char sp, char *flags, va_list *arg)
+{
+	char			*result;
+
+	result = NULL;
+	if (sp == 'c') {
+		result = ft_strnew(2);
+		result[0] = (char) va_arg(*arg, int);
+	}
+	else if (sp == 's')
+		return (ft_strdup(va_arg(*arg, char *)));
+	else if (ft_strchr("diu", sp))
+		return (ft_itoa(va_arg(*arg, int)));
+	else if (ft_strchr("xXp", sp))
+	{
+		result = ft_itoa_base(va_arg(*arg, int), 16);
+		if (ft_strchr(flags, '#') || sp == 'p')
+			return (ft_strjoin("0x", result));
+	}
+	else if (ft_strchr("oO", sp))
+	{
+		result = ft_itoa_base(va_arg(*arg, int), 8);
+		if (ft_strchr(flags, '#') && result[0] != '0')
+			return (ft_strjoin("0", result));
+	}
+	return (result);
+}
+
+int					print(t_converter *conv)
+{
+	int				c;
 	int				result;
 
 	c = 0;
-	specs = "cspxudio";
-	print = init_funcs(10);
-	converter = (t_converter *)malloc(sizeof(t_converter));
-	converter->data = (union u_data *)malloc(sizeof(union u_data));
-	converter->flags = flags;
 	result = 0;
-	if (sp == '%')
+	if (conv->specifier == '%')
 	{
 		ft_putchar('%');
 		result = 1;
 	}
-	c = ft_indexof(specs, sp);
-	if (c != -1)
+	else
 	{
-		print[c](converter, args, field);
-		result = 1;
+		pad_left(conv);
+		if (conv->precision > 0)
+		{
+			while (c < conv->precision && conv->data[c])
+				ft_putchar(conv->data[c++]);
+		}
+		else
+			ft_putstr(conv->data);
+		pad_right(conv);
+		result = (c > conv->field) ? c : conv->field;
 	}
-	free((void *) converter->data);
-	free((void *) print);
-	free((void *) converter);
 	return (result);
 }
-//TODO: fix printf return value
+
+void				get_converter(const char *tmp_str, int *t_index, t_converter *conv)
+{
+	const char		*flag_str = "#+-0 ";
+	const char		*specs = "cspxudio";
+	int				f_index;
+
+	f_index = 0;
+	conv->flags = ft_strnew(6);
+	conv->specifier = 0;
+	conv->data = NULL;
+	conv->precision = 0;
+	conv->field = 0;
+	while (ft_strchr((const char *)specs, tmp_str[*t_index]) == NULL && tmp_str[*t_index])
+	{
+		if (ft_strchr((const char *)flag_str, tmp_str[*t_index]) != NULL)
+			conv->flags[f_index++] = tmp_str[*t_index];
+		else if (tmp_str[*t_index] == '.')
+			conv->precision = get_digit((char *)tmp_str, t_index);
+		else if (ft_isdigit(tmp_str[*t_index]))
+			conv->field = get_digit((char *)tmp_str, t_index);
+		else
+			break;
+		(*t_index)++;
+	}
+	conv->specifier = tmp_str[*t_index];
+}
+
 int					ft_printf(const char *format, ...)
 {
 	va_list			args;
 	int				index;
 	int				cnt;
-	int				tmp;
-	t_field			field;
-	t_flag			*flags;
-	const char		*flag_str = "#+-0 ";
-	const char		*specs = "cspxudio";
-	const char		*len_mods = "hljz";
+	t_converter		conv;
 
 	va_start(args, format);
-	field.precision = 0;
-	field.width = 0;
-	flags = NULL;
 	index = 0;
 	cnt = 0;
-	tmp = -1;
 	while (format[index])
 	{
 		if (format[index] == '%')
 		{
-			tmp = index++;
-			flags = init_flags();
-			while (ft_strchr((const char *)specs, format[index]) == NULL && format[index])
+			index++;
+			get_converter(format, &index, &conv);
+			conv.data = get_arg_as_str(conv.specifier, conv.flags, &args);
+			if ((cnt += print(&conv)) > 0)
 			{
-				if (ft_strchr((const char *)flag_str, format[index]) != NULL)
-				{
-						
-					flags[ft_indexof(flag_str, format[index++])].value = 1;
-				}
-				else if (ft_strchr((const char *)len_mods, format[index]) != NULL)
-				{
-					if (ft_strncmp(&format[index], "hh", 2) == 0 || ft_strncmp(&format[index], "ll", 2) == 0)
-					{
-						
-						index++;
-					}
-					index++;
-				}
-				else if (format[index] == '.')
-					field.precision = get_digit((char *)format, &index);
-				else if (ft_isdigit(format[index]))
-					field.width = get_digit((char *)format, &index);
-				else
-					break;
-			}
-			tmp = index;
-			if (print_word(format[index++], &args, flags, &field))
-			{
-				cnt++;
-				free((void *) flags);
-				flags = NULL;
+				index++;
+				ft_strdel(&(conv.flags));
+				ft_strdel(&(conv.data));
 				continue;
 			}
-			index = tmp + 1;
 		}
-		ft_putchar(format[index]);
-		index++;
-		if (flags != NULL)
-			free((void *) flags);
+		ft_putchar(format[index++]);
+		cnt++;
 	}
 	va_end(args);
 	return (cnt);

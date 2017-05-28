@@ -26,7 +26,7 @@ SRC = ft_memset.c ft_bzero.c ft_memcpy.c ft_memccpy.c ft_memmove.c \
 	  ft_lstadd.c ft_lstiter.c ft_lstmap.c ft_strrev.c ft_itoa_base.c \
 	  ft_putnbr_base.c ft_indexof.c ft_printf.c
 
-PRF_SRC = print_func.c print_func_2.c pad.c utils.c
+PRF_SRC = pad.c
 
 OBJ = $(SRC:.c=.o) $(PRF_SRC:.c=.o)
 
@@ -45,10 +45,6 @@ $(NAME):
 
 all: $(NAME)
 
-test: $(NAME)
-	@gcc -o test main.c $(NAME) -Iincludes/
-	@echo "---==== test built ====---"
-
 clean:
 	@rm -f $(OBJ)
 	@echo "---==== project clean ====---"
@@ -58,4 +54,14 @@ fclean: clean
 
 re: fclean all
 
-lean: all clean
+test:
+	@gcc -c main.c -Iincludes/
+	@gcc -o test main.o $(NAME)
+	@rm -f $(OBJ)
+	@echo "---==== test built ====---"
+
+tclean:
+	@rm -f main.o
+	@rm -f test
+
+testre: tclean test

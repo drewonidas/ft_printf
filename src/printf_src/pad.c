@@ -8,81 +8,50 @@
  *		[unsigned int ouput_len - length of output]
  */
 	
-static void		pad_str(int padding)
-{
-	while (padding > 0)
-	{
-		padding--;
-		ft_putchar(' ');
-	}
-}
-
-static void		pad_int_right(int padding, t_flag *flags)
-{
-	while (padding > 0)
-	{
-		padding--;
-		if (flags[2].value == 1)
-			ft_putchar(' ');
-		else
-			ft_putchar('0');
-	}
-}
-
-//#+-0' '
-static void		pad_int_left(int padding, t_flag *flags)
-{
-	int right;
-
-	right = 0;
-	while (padding > 0)
-	{
-		if (flags[1].value > 0 && flags[3].value == 1)
-		{
-			ft_putchar('+');
-			flags[1].value = 0;
-			right = 1;
-			padding--;
-			continue;
-		}
-		else if (flags[4].value > 0)
-		{
-			ft_putchar(' ');
-			flags[4].value = 0;
-			padding--;
-			continue;
-		}
-		if (flags[2].value == 1)
-			break;
-		padding--;
-		if (flags[3].value == 1)
-			ft_putchar('0');
-		else
-			ft_putchar(' ');
-		if (right && padding == 1)
-			padding--;
-	}
-}
-
-void			pad(char sp, char side, t_flag *flags, t_field *attr, unsigned int output_len)
+static void		pad(t_converter *conv, char pad_chr)
 {
 	int			padding;
-	int			tmp;
+	int			out_len;
+
+	out_len = ft_strlen(conv->data);
+	padding = ABS(conv->field - ((int) out_len - conv->precision));
+	while (padding-- > 0)
+		ft_putchar(pad_chr);
+}
+
+void			pad_right(t_converter *conv)
+{
+	if (ft_strchr(conv->flags, '-'))
+	{
+		pad(conv, ' ');
+	}
+}
+
+void			pad_left(t_converter *conv)
+{
+	char		tmp;
 
 	tmp = 0;
-	padding = ABS(attr->width - ((int) output_len - attr->precision));
-	if (flags[1].value == 1)
-		tmp = 1;
-	if (sp == 'i')
+	if (ft_strchr("di", conv->specifier))
 	{
-		if (flags[1].value == 1)
-			padding--;
-		if (side == 'L')
-			pad_int_left(padding, flags);
-		else
-			pad_int_right(padding, flags);
+		if (ft_strchr(conv->flags, '+'))
+			tmp = '+';
+		else if (ft_strchr(conv->flags, ' '))
+			tmp = ' ';
 	}
-	else
-		pad_str(padding);
-	flags[1].value = tmp;
+	if (tmp > 0)
+		conv->field--;
+	if (ft_strchr(conv->flags, '-') || ft_strchr(conv->flags, '0'))
+	{
+		ft_putchar(tmp);
+		tmp = 0;
+	}
+	if (ft_strchr(conv->flags, '-') == NULL)
+	{
+		if (ft_strchr(conv->flags, '0') && ft_strchr("dioux", conv->specifier))
+			pad(conv, '0');
+		else
+			pad(conv, ' ');
+		ft_putchar(tmp);
+	}
 }
